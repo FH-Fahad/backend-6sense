@@ -4,15 +4,26 @@ const Employee = require("../Database/Employee.Schema");
 
 // Task 1: Create API to store employees
 router.post("/", async (req, res) => {
-  const employee = new Employee({
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-    email: req.body.email,
-    phone: req.body.phone,
-    blocked: req.body.blocked,
-  });
+  const { firstname, lastname, email, phone, blocked } = req.body;
 
   try {
+    // Check if the email already exists
+    const existingEmployee = await Employee.findOne({ email });
+
+    if (existingEmployee) {
+      return res.status(400).json({ error: "Email is already in use" });
+    }
+
+    // Create a new employee if the email is not in use
+    const employee = new Employee({
+      firstname,
+      lastname,
+      email,
+      phone,
+      blocked,
+    });
+
+    // Save the employee
     const saveEmployee = await employee.save();
 
     const responseEmployee = await Employee.findById(saveEmployee._id).select(
