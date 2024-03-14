@@ -4,7 +4,7 @@ const Employee = require("../Database/Employee.Schema");
 
 // Task 1: Create API to store employees
 router.post("/", async (req, res) => {
-  const { firstname, lastname, email, phone, blocked } = req.body;
+  const { firstName, lastName, email, phone, blocked } = req.body;
 
   try {
     // Check if the email already exists
@@ -16,8 +16,8 @@ router.post("/", async (req, res) => {
 
     // Create a new employee if the email is not in use
     const employee = new Employee({
-      firstname,
-      lastname,
+      firstName,
+      lastName,
       email,
       phone,
       blocked,
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
     const saveEmployee = await employee.save();
 
     const responseEmployee = await Employee.findById(saveEmployee._id).select(
-      "firstname lastname email phone blocked"
+      "firstName lastName email phone blocked"
     );
 
     res.json({ message: "Employee added successfully", responseEmployee });
@@ -40,12 +40,12 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const employees = await Employee.find().select(
-      "firstname lastname email phone blocked"
+      "firstName lastName email phone blocked"
     );
 
     const totalEmployees = employees.length;
 
-    res.json({ message: "All Employyes", totalEmployees, employees });
+    res.json({ message: "All Employees", totalEmployees, employees });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -64,13 +64,13 @@ router.patch("/:id", getEmployee, async (req, res) => {
     return res.status(400).json({ message: "Email cannot be updated" });
   }
 
-  if (req.body.firstname != null) {
-    res.employee.firstname = req.body.firstname;
-    updatedFields.push(`Updated firstname: ${req.body.firstname}`);
+  if (req.body.firstName != null) {
+    res.employee.firstName = req.body.firstName;
+    updatedFields.push(`Updated firstName: ${req.body.firstName}`);
   }
-  if (req.body.lastname != null) {
-    res.employee.lastname = req.body.lastname;
-    updatedFields.push(`Updated lastname: ${req.body.lastname}`);
+  if (req.body.lastName != null) {
+    res.employee.lastName = req.body.lastName;
+    updatedFields.push(`Updated lastName: ${req.body.lastName}`);
   }
   if (req.body.phone != null) {
     res.employee.phone = req.body.phone;
@@ -111,7 +111,7 @@ async function getEmployee(req, res, next) {
   let employee;
   try {
     employee = await Employee.findById(req.params.id).select(
-      "firstname lastname email phone blocked"
+      "firstName lastName email phone blocked"
     );
     if (employee == null) {
       return res.status(404).json({ message: "Employee Not Found" });
